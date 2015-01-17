@@ -12,8 +12,8 @@ import javax.json.stream.JsonParser.Event;
 
 public class GoogleAPIJava {
 
-	final static String apiKey = "<insert api key>";
-	final static String customSearchEngineKey = "<insert custom search engine key>";
+	final static String apiKey = "<insert your API Key here>";
+	final static String customSearchEngineKey = "<insert your search engine key here>";
 
 	// base url for the search query
 	final static String searchURL = "https://www.googleapis.com/customsearch/v1?";
@@ -24,66 +24,69 @@ public class GoogleAPIJava {
 
 		int contador = 0;
 
-		while (contador < 11) {
-			
-			System.out.println("***************** CONSULTA **************************");
+		while (contador < 10) {
+
+			System.out
+					.println("***************** SEARCH **************************");
 			System.out.println("");
 
 			String result = "";
 
-			result = read(makeSearchString("pernambucanas", inicio, 10));
-
-			System.out.println(result);
+			result = read("java+android", inicio, 10);
 
 			JsonParser parser = Json.createParser(new StringReader(result));
+
 			while (parser.hasNext()) {
 				Event evento = parser.next();
-				switch (evento) {
-				case KEY_NAME: {
-					System.out.print(parser.getString() + "=");
-					break;
+
+				if (evento == Event.KEY_NAME) {
+
+					if (parser.getString().equals("htmlTitle")) {
+						Event valor = parser.next();
+
+						if (valor == Event.VALUE_STRING)
+							System.out.println("Title (HTML): "
+									+ parser.getString());
+					}
+
+					if (parser.getString().equals("link")) {
+
+						Event valor = parser.next();
+
+						if (valor == Event.VALUE_STRING)
+							System.out.println("Link: " + parser.getString());
+					}
+
 				}
-				case VALUE_STRING: {
-					System.out.println(parser.getString());
-					break;
-				}
-				case VALUE_NUMBER: {
-					System.out.println(parser.getString());
-					break;
-				}
-				case VALUE_NULL: {
-					System.out.println("null");
-					break;
-				}
-				case START_ARRAY: {
-					System.out.println("Inicio do Array");
-					break;
-				}
-				case END_ARRAY: {
-					System.out.println("Final do Array");
-					break;
-				}
-				case END_OBJECT: {
-					System.out.println("Final do Objeto Json");
-					break;
-				}
-				}
+
 			}
 
 			inicio = inicio + 10;
 
 			contador++;
-			
-			System.out.println("**************************************************");
+
+			System.out
+					.println("**************************************************");
 
 		}
 
 	}
 
-	private static String read(String pUrl) {
-		// pUrl is the URL we created in previous step
+	private static String read(String qSearch, int start, int numOfResults) {
 		try {
-			URL url = new URL(pUrl);
+
+			String toSearch = searchURL + "key=" + apiKey + "&cx="
+					+ customSearchEngineKey + "&q=";
+
+			toSearch += qSearch + "+";
+
+			toSearch += "&alt=json";
+
+			toSearch += "&start=" + start;
+
+			toSearch += "&num=" + numOfResults;
+
+			URL url = new URL(toSearch);
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			BufferedReader br = new BufferedReader(new InputStreamReader(
@@ -98,29 +101,6 @@ public class GoogleAPIJava {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	private static String makeSearchString(String qSearch, int start,
-			int numOfResults) {
-		String toSearch = searchURL + "key=" + apiKey + "&cx="
-				+ customSearchEngineKey + "&q=";
-
-		// replace spaces in the search query with +
-		String keys[] = qSearch.split("[ ]+");
-		for (String key : keys) {
-			toSearch += key + "+"; // append the keywords to the url
-		}
-
-		// specify response format as json
-		toSearch += "&alt=json";
-
-		// specify starting result number
-		toSearch += "&start=" + start;
-
-		// specify the number of results you need from the starting position
-		toSearch += "&num=" + numOfResults;
-
-		return toSearch;
 	}
 
 }
