@@ -37,23 +37,23 @@ public class GoogleAPIJava {
 			JsonParser parser = Json.createParser(new StringReader(result));
 
 			while (parser.hasNext()) {
-				Event evento = parser.next();
+				Event event = parser.next();
 
-				if (evento == Event.KEY_NAME) {
+				if (event == Event.KEY_NAME) {
 
 					if (parser.getString().equals("htmlTitle")) {
-						Event valor = parser.next();
+						Event value = parser.next();
 
-						if (valor == Event.VALUE_STRING)
+						if (value == Event.VALUE_STRING)
 							System.out.println("Title (HTML): "
 									+ parser.getString());
 					}
 
 					if (parser.getString().equals("link")) {
 
-						Event valor = parser.next();
+						Event value = parser.next();
 
-						if (valor == Event.VALUE_STRING)
+						if (value == Event.VALUE_STRING)
 							System.out.println("Link: " + parser.getString());
 					}
 
@@ -78,7 +78,7 @@ public class GoogleAPIJava {
 			String toSearch = searchURL + "key=" + apiKey + "&cx="
 					+ customSearchEngineKey + "&q=";
 
-			toSearch += qSearch + "+";
+			toSearch += qSearch;
 
 			toSearch += "&alt=json";
 
